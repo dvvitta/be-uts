@@ -1,16 +1,17 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/db";
 
-// 1. menampilkan semua event (DITAMBAHKAN INCLUDE RELASI)
+// 1. menampilkan semua event 
 export const getEvents = async (req: Request, res: Response) => {
   try {
     const allEvents = await prisma.event.findMany({
       orderBy: {
         createdAt: "desc",
       },
-      // ▲ TAMBAHKAN INI agar relasi category otomatis terambil (SQL Join)
+      // Mengambil relasi objek category dan speaker sekaligus
       include: {
         category: true, 
+        speaker: true,  
       },
     });
 
@@ -58,7 +59,7 @@ export const createEvent = async (req: Request, res: Response) => {
   }
 };
 
-// 3. mengambil event berdasarkan id (DITAMBAHKAN INCLUDE RELASI)
+// 3. mengambil event berdasarkan id (DITAMBAHKAN INCLUDE RELASI CATEGORY & SPEAKER)
 export const getEventById = async (req: Request, res: Response) => {
   try {
     const id = Number(req.params.id);
@@ -67,9 +68,10 @@ export const getEventById = async (req: Request, res: Response) => {
       where: {
         id,
       },
-      // ▲ TAMBAHKAN INI juga agar saat form edit dimuat, info kategorinya aman
+      // Agar saat form edit/update di-render, data dropdown kategori & speaker terisi otomatis
       include: {
         category: true,
+        speaker: true,  // <-- TAMBAHKAN BARIS INI
       },
     });
 
