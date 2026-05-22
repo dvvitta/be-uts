@@ -1,6 +1,7 @@
 import { prisma } from "../lib/db";
 import { Request, Response } from "express";
 
+
 //1. menampilkan semua category
 export const getCategories = async (req: Request, res: Response) => {
   try {
