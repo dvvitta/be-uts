@@ -1,26 +1,29 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/db";
 
-//1. menampilkan semua event
+// 1. menampilkan semua event (DITAMBAHKAN INCLUDE RELASI)
 export const getEvents = async (req: Request, res: Response) => {
   try {
     const allEvents = await prisma.event.findMany({
       orderBy: {
         createdAt: "desc",
       },
+      // ▲ TAMBAHKAN INI agar relasi category otomatis terambil (SQL Join)
+      include: {
+        category: true, 
+      },
     });
 
     res.json(allEvents);
   } catch (error) {
     console.log(error);
-
     res.status(500).json({
       message: "Data event gagal ditampilkan",
     });
   }
 };
 
-//2. membuat event
+// 2. membuat event
 export const createEvent = async (req: Request, res: Response) => {
   try {
     const { name, location, dateEvent, description, categoryId, speakerId } =
@@ -38,7 +41,6 @@ export const createEvent = async (req: Request, res: Response) => {
         location,
         dateEvent: new Date(dateEvent),
         description,
-
         categoryId: Number(categoryId),
         speakerId: Number(speakerId),
       },
@@ -50,14 +52,13 @@ export const createEvent = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.log(error);
-
     res.status(500).json({
       message: "Gagal menambahkan event",
     });
   }
 };
 
-//3. mengambil event berdasarkan id
+// 3. mengambil event berdasarkan id (DITAMBAHKAN INCLUDE RELASI)
 export const getEventById = async (req: Request, res: Response) => {
   try {
     const id = Number(req.params.id);
@@ -65,6 +66,10 @@ export const getEventById = async (req: Request, res: Response) => {
     const event = await prisma.event.findUnique({
       where: {
         id,
+      },
+      // ▲ TAMBAHKAN INI juga agar saat form edit dimuat, info kategorinya aman
+      include: {
+        category: true,
       },
     });
 
@@ -77,18 +82,16 @@ export const getEventById = async (req: Request, res: Response) => {
     res.json(event);
   } catch (error) {
     console.log(error);
-
     res.status(500).json({
       message: "Gagal mengambil detail event",
     });
   }
 };
 
-//4. update event
+// 4. update event
 export const updateEvent = async (req: Request, res: Response) => {
   try {
     const id = Number(req.params.id);
-
     const { name, location, dateEvent, description, categoryId, speakerId } =
       req.body;
 
@@ -108,21 +111,16 @@ export const updateEvent = async (req: Request, res: Response) => {
       where: {
         id,
       },
-
       data: {
         name,
         location,
-
         ...(dateEvent && {
           dateEvent: new Date(dateEvent),
         }),
-
         description,
-
         ...(categoryId && {
           categoryId: Number(categoryId),
         }),
-
         ...(speakerId && {
           speakerId: Number(speakerId),
         }),
@@ -135,14 +133,13 @@ export const updateEvent = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.log(error);
-
     res.status(500).json({
       message: "Update event gagal",
     });
   }
 };
 
-//5. hapus event
+// 5. hapus event
 export const deleteEvent = async (req: Request, res: Response) => {
   try {
     const id = Number(req.params.id);
@@ -170,7 +167,6 @@ export const deleteEvent = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.log(error);
-
     res.status(500).json({
       message: "Penghapusan event gagal",
     });
