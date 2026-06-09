@@ -6,7 +6,8 @@ import prisma from "../prisma";
 export const register = async (req: Request, res: Response) => {
   try {
     const { email, password, name } = req.body;
-
+    
+    console.log("Register Request Email:", email);
     if (!email || !password || !name) {
       return res.status(400).json({
         message: "Email, password, dan name wajib diisi",
@@ -112,6 +113,7 @@ export const getUsers = async (req: Request, res: Response) => {
         id: true,
         name: true,
         email: true,
+        password: true,
       },
     });
 
