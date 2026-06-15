@@ -1,9 +1,10 @@
 import express from "express";
 import cors from "cors";
-import eventRoute from "./routes/eventRoute";
-import categoryRoute from "./routes/categoryRoute";
-import speakerRoute from "./routes/speakersRoute";
-import authRoute from "./routes/authRoute";
+import eventRoute from "./routes/eventRoute.js";
+import categoryRoute from "./routes/categoryRoute.js";
+import speakerRoute from "./routes/speakersRoute.js";
+import authRoute from "./routes/authRoute.js";
+import userRoute from "./routes/userRoutes.js";
 
 const app = express();
 const port = 3000;
@@ -19,6 +20,7 @@ app.use("/events", eventRoute);
 app.use("/categories", categoryRoute);
 app.use("/speakers", speakerRoute);
 app.use("/auth", authRoute);
+app.use("/auth", userRoute); 
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);

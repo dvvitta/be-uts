@@ -2,12 +2,17 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteEvent = exports.updateEvent = exports.getEventById = exports.createEvent = exports.getEvents = void 0;
 const db_1 = require("../lib/db");
-//1. menampilkan semua event
+// 1. menampilkan semua event 
 const getEvents = async (req, res) => {
     try {
         const allEvents = await db_1.prisma.event.findMany({
             orderBy: {
                 createdAt: "desc",
+            },
+            // Mengambil relasi objek category dan speaker sekaligus
+            include: {
+                category: true,
+                speaker: true,
             },
         });
         res.json(allEvents);
@@ -20,7 +25,7 @@ const getEvents = async (req, res) => {
     }
 };
 exports.getEvents = getEvents;
-//2. membuat event
+// 2. membuat event
 const createEvent = async (req, res) => {
     try {
         const { name, location, dateEvent, description, categoryId, speakerId } = req.body;
@@ -52,13 +57,18 @@ const createEvent = async (req, res) => {
     }
 };
 exports.createEvent = createEvent;
-//3. mengambil event berdasarkan id
+// 3. mengambil event berdasarkan id (DITAMBAHKAN INCLUDE RELASI CATEGORY & SPEAKER)
 const getEventById = async (req, res) => {
     try {
         const id = Number(req.params.id);
         const event = await db_1.prisma.event.findUnique({
             where: {
                 id,
+            },
+            // Agar saat form edit/update di-render, data dropdown kategori & speaker terisi otomatis
+            include: {
+                category: true,
+                speaker: true, // <-- TAMBAHKAN BARIS INI
             },
         });
         if (!event) {
@@ -76,7 +86,7 @@ const getEventById = async (req, res) => {
     }
 };
 exports.getEventById = getEventById;
-//4. update event
+// 4. update event
 const updateEvent = async (req, res) => {
     try {
         const id = Number(req.params.id);
@@ -123,7 +133,7 @@ const updateEvent = async (req, res) => {
     }
 };
 exports.updateEvent = updateEvent;
-//5. hapus event
+// 5. hapus event
 const deleteEvent = async (req, res) => {
     try {
         const id = Number(req.params.id);
